@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Advanced Image Gallery</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .filters {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .filters button {
+      padding: 8px 15px;
+      margin: 5px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .filters button:hover {
+      background-color: #0056b3;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .gallery img {
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .gallery img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .lightbox img {
+      max-width: 90%;
+      max-height: 70%;
+      border-radius: 8px;
+    }
+
+    .lightbox-controls {
+      margin-top: 20px;
+    }
+
+    .lightbox-controls button {
+      padding: 10px 20px;
+      margin: 0 10px;
+      font-size: 16px;
+      cursor: pointer;
+      background: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 30px;
+      color: white;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      .lightbox img {
+        max-height: 50%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Image Gallery with Filters and Navigation</h1>
+
+  <div class="filters">
+    <button onclick="filterImages('all')">All</button>
+    <button onclick="filterImages('nature')">Nature</button>
+    <button onclick="filterImages('city')">City</button>
+  </div>
+
+  <div class="gallery" id="gallery">
+    <img src="img30.jpg" alt="Nature" data-category="nature">
+    <img src="img32.jpg" alt="Nature" data-category="nature">
+    <img src="img31.jpg" alt="Nature" data-category="nature">
+    <img src="img38.jpg" alt="City" data-category="city">
+    <img src="img33.jpg" alt="Nature" data-category="nature">
+    <img src="img40.jpg" alt="City" data-category="city">
+    <img src="img35.jpg" alt="Nature" data-category="nature">
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close-btn" onclick="closeLightbox()">&times;</span>
+    <img id="lightboxImg" src="" alt="">
+    <div class="lightbox-controls">
+      <button onclick="prevImage()">Prev</button>
+      <button onclick="nextImage()">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const allImages = document.querySelectorAll('.gallery img');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    let filteredImages = Array.from(allImages);
+    let currentIndex = 0;
+
+    allImages.forEach(img => {
+      img.addEventListener('click', () => {
+        currentIndex = filteredImages.indexOf(img);
+        showLightbox(img.src);
+      });
+    });
+
+    function showLightbox(src) {
+      lightbox.style.display = 'flex';
+      lightboxImg.src = src;
+    }
+
+    function closeLightbox() {
+      lightbox.style.display = 'none';
+    }
+
+    function nextImage() {
+      currentIndex = (currentIndex + 1) % filteredImages.length;
+      lightboxImg.src = filteredImages[currentIndex].src;
+    }
+
+    function prevImage() {
+      currentIndex = (currentIndex - 1 + filteredImages.length) % filteredImages.length;
+      lightboxImg.src = filteredImages[currentIndex].src;
+    }
+
+    function filterImages(category) {
+      filteredImages = Array.from(allImages).filter(img => {
+        if (category === 'all' || img.dataset.category === category) {
+          img.style.display = 'block';
+          return true;
+        } else {
+          img.style.display = 'none';
+          return false;
+        }
+      });
+    }
+
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target === lightboxImg) {
+        closeLightbox();
+      }
+    });
+  </script>
+
+</body>
+</html>
